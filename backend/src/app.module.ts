@@ -1,3 +1,6 @@
+import { Circle } from './circles/circle.entity';
+import { Product } from './products/product.entity';
+import { Sale } from './products/sale.entity';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -21,7 +24,7 @@ import { AppService } from './app.service';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [], // 後でProductエンティティなどをここに追加していく
+        entities: [Circle, Product, Sale], // 後でProductエンティティなどをここに追加していく
         synchronize: true, // 開発中はtrueでOK。本番運用ではfalseにして専用のマイグレーションを使う
       }),
     }),
