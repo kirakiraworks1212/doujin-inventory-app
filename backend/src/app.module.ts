@@ -1,3 +1,4 @@
+import { ProductsModule } from './products/products.module';
 import { Circle } from './circles/circle.entity';
 import { Product } from './products/product.entity';
 import { Sale } from './products/sale.entity';
@@ -28,6 +29,7 @@ import { AppService } from './app.service';
         synchronize: true, // 開発中はtrueでOK。本番運用ではfalseにして専用のマイグレーションを使う
       }),
     }),
+     ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
