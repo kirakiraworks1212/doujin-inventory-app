@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CirclesModule } from './circles/circles.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AppService } from './app.service';
       }),
     }),
      ProductsModule,
+     CirclesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
