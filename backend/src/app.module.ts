@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CirclesModule } from './circles/circles.module';
+import { PublicModule } from './public/public.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CirclesModule } from './circles/circles.module';
     }),
      ProductsModule,
      CirclesModule,
+     PublicModule,
   ],
   controllers: [AppController],
   providers: [AppService],
