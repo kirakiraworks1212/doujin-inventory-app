@@ -9,6 +9,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CirclesModule } from './circles/circles.module';
 import { PublicModule } from './public/public.module';
+import { StaffUser } from './auth/staff-user.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -27,13 +29,14 @@ import { PublicModule } from './public/public.module';
         username: configService.get('DB_USERNAME'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
-        entities: [Circle, Product, Sale], // 後でProductエンティティなどをここに追加していく
+        entities: [Circle, Product, Sale,StaffUser], // 後でProductエンティティなどをここに追加していく
         synchronize: true, // 開発中はtrueでOK。本番運用ではfalseにして専用のマイグレーションを使う
       }),
     }),
      ProductsModule,
      CirclesModule,
      PublicModule,
+     AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
