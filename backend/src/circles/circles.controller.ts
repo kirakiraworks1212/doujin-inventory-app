@@ -1,3 +1,5 @@
+import { UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import {
   Body,
   Controller,
@@ -11,6 +13,7 @@ import {
 import { CirclesService } from './circles.service';
 import { CreateCircleDto, UpdateCircleDto } from './dto/circle.dto';
 
+@UseGuards(JwtAuthGuard)
 @Controller('circles')
 export class CirclesController {
   constructor(private readonly circlesService: CirclesService) {}
