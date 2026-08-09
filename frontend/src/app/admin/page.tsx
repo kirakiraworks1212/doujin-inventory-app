@@ -27,6 +27,8 @@ export default function AdminPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editStock, setEditStock] = useState('');
   const [editSubmitting, setEditSubmitting] = useState(false);
+  const [sellingId, setSellingId] = useState<number | null>(null);
+  const [saleError, setSaleError] = useState('');
 
   async function fetchProducts(token: string, cId: number) {
     const productsRes = await fetch(
@@ -116,6 +118,45 @@ export default function AdminPage() {
       );
     } finally {
       setSubmitting(false);
+    }
+  }
+  // 1個売れたときの処理(売上記録+在庫減算)
+  async function handleSell(productId: number) {
+    if (!circleId) return;
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    setSaleError('');
+    setSellingId(productId);
+    try {
+      const res = await fetch(
+        `http://localhost:3001/products/${productId}/sales`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ quantity: 1 }),
+        },
+      );
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || '売上の記録に失敗しました');
+      }
+
+      await fetchProducts(token, circleId);
+    } catch (err) {
+      setSaleError(
+        err instanceof Error ? err.message : '売上の記録に失敗しました',
+      );
+    } finally {
+      setSellingId(null);
     }
   }
 
@@ -279,7 +320,7 @@ export default function AdminPage() {
                     キャンセル
                   </button>
                 </div>
-              ) : (
+            ) : (
                 <div className="flex items-center gap-3">
                   <span className="text-sm">
                     在庫: {product.currentStock} / {product.initialStock}
@@ -289,6 +330,15 @@ export default function AdminPage() {
                     className="text-sm text-blue-400 underline"
                   >
                     編集
+                  </button>
+                  <button
+                    onClick={() => handleSell(product.id)}
+                    disabled={
+                      sellingId === product.id || product.currentStock <= 0
+                    }
+                    className="text-sm bg-green-600 text-white px-3 py-1 rounded-lg hover:bg-green-700 disabled:opacity-50"
+                  >
+                    {sellingId === product.id ? '記録中...' : '1個売れた'}
                   </button>
                 </div>
               )}
