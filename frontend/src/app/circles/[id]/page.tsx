@@ -17,7 +17,7 @@ type Product = {
 };
 
 async function getCircle(id: string): Promise<Circle | null> {
-  const res = await fetch('http://localhost:3001/public/circles', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/circles`, {
     cache: 'no-store',
   });
   const circles: Circle[] = await res.json();
@@ -26,7 +26,7 @@ async function getCircle(id: string): Promise<Circle | null> {
 
 async function getProducts(circleId: string): Promise<Product[]> {
   const res = await fetch(
-    `http://localhost:3001/public/products?circleId=${circleId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/public/products?circleId=${circleId}`,
     { cache: 'no-store' },
   );
   return res.json();

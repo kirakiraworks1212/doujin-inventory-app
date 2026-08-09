@@ -32,7 +32,7 @@ export default function AdminPage() {
 
   async function fetchProducts(token: string, cId: number) {
     const productsRes = await fetch(
-      `http://localhost:3001/products?circleId=${cId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/products?circleId=${cId}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
     const productsData = await productsRes.json();
@@ -48,7 +48,7 @@ export default function AdminPage() {
       }
 
       try {
-        const meRes = await fetch('http://localhost:3001/auth/me', {
+        const meRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!meRes.ok) {
@@ -89,7 +89,7 @@ export default function AdminPage() {
 
     setSubmitting(true);
     try {
-      const res = await fetch('http://localhost:3001/products', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ export default function AdminPage() {
     setSellingId(productId);
     try {
       const res = await fetch(
-        `http://localhost:3001/products/${productId}/sales`,
+        `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}/sales`,
         {
           method: 'POST',
           headers: {
@@ -185,7 +185,7 @@ export default function AdminPage() {
     setEditSubmitting(true);
     try {
       const res = await fetch(
-        `http://localhost:3001/products/${productId}/stock`,
+        `${process.env.NEXT_PUBLIC_API_URL}/products/${productId}/stock`,
         {
           method: 'PATCH',
           headers: {

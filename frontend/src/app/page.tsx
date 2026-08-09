@@ -7,7 +7,7 @@ type Circle = {
 };
 
 async function getCircles(): Promise<Circle[]> {
-  const res = await fetch('http://localhost:3001/public/circles', {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/public/circles`, {
     cache: 'no-store',
   });
   return res.json();
