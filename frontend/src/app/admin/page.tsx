@@ -24,6 +24,9 @@ export default function AdminPage() {
   const [initialStock, setInitialStock] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState('');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editStock, setEditStock] = useState('');
+  const [editSubmitting, setEditSubmitting] = useState(false);
 
   async function fetchProducts(token: string, cId: number) {
     const productsRes = await fetch(
@@ -116,6 +119,56 @@ export default function AdminPage() {
     }
   }
 
+  // 在庫編集モードを開始する
+  function startEditStock(product: Product) {
+    setEditingId(product.id);
+    setEditStock(String(product.currentStock));
+  }
+
+  // 在庫編集をキャンセルする
+  function cancelEditStock() {
+    setEditingId(null);
+    setEditStock('');
+  }
+
+  // 在庫を更新する
+  async function handleUpdateStock(productId: number) {
+    if (!circleId) return;
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    setEditSubmitting(true);
+    try {
+      const res = await fetch(
+        `http://localhost:3001/products/${productId}/stock`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ newStock: Number(editStock) }),
+        },
+      );
+
+      if (!res.ok) {
+        throw new Error('在庫の更新に失敗しました');
+      }
+
+      setEditingId(null);
+      setEditStock('');
+      await fetchProducts(token, circleId);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : '在庫の更新に失敗しました');
+    } finally {
+      setEditSubmitting(false);
+    }
+  }
+
   if (loading) {
     return <p className="p-6">読み込み中...</p>;
   }
@@ -157,7 +210,7 @@ export default function AdminPage() {
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 required
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2"
               />
             </div>
             <div className="flex-1">
@@ -170,7 +223,7 @@ export default function AdminPage() {
                 value={initialStock}
                 onChange={(e) => setInitialStock(e.target.value)}
                 required
-                className="w-full border rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2"
               />
             </div>
           </div>
@@ -196,15 +249,49 @@ export default function AdminPage() {
           {products.map((product) => (
             <li
               key={product.id}
-              className="p-4 border rounded-lg flex justify-between items-center"
+              className="p-4 border border-gray-700 rounded-lg flex justify-between items-center"
             >
               <div>
                 <p className="font-medium">{product.name}</p>
                 <p className="text-sm text-gray-500">¥{product.price}</p>
               </div>
-              <span className="text-sm">
-                在庫: {product.currentStock} / {product.initialStock}
-              </span>
+
+              {editingId === product.id ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    value={editStock}
+                    onChange={(e) => setEditStock(e.target.value)}
+                    className="w-20 border border-gray-700 bg-gray-800 text-white rounded-lg px-2 py-1"
+                  />
+                  <button
+                    onClick={() => handleUpdateStock(product.id)}
+                    disabled={editSubmitting}
+                    className="text-sm bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    保存
+                  </button>
+                  <button
+                    onClick={cancelEditStock}
+                    className="text-sm text-gray-400 underline"
+                  >
+                    キャンセル
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm">
+                    在庫: {product.currentStock} / {product.initialStock}
+                  </span>
+                  <button
+                    onClick={() => startEditStock(product)}
+                    className="text-sm text-blue-400 underline"
+                  >
+                    編集
+                  </button>
+                </div>
+              )}
             </li>
           ))}
         </ul>
