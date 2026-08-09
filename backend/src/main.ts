@@ -5,6 +5,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
+  // フロントエンド(Next.js)からのアクセスを許可する
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://doujin-inventory-app-production.up.railway.app'],
+  });
+  await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();
