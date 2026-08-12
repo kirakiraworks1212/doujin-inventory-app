@@ -107,7 +107,6 @@ export default function AdminPage() {
         throw new Error('商品の登録に失敗しました');
       }
 
-      // 登録成功したら、入力欄をリセットして、一覧を再取得する
       setName('');
       setPrice('');
       setInitialStock('');
@@ -120,6 +119,7 @@ export default function AdminPage() {
       setSubmitting(false);
     }
   }
+
   // 1個売れたときの処理(売上記録+在庫減算)
   async function handleSell(productId: number) {
     if (!circleId) return;
@@ -233,38 +233,45 @@ export default function AdminPage() {
         <h2 className="text-lg font-semibold mb-3">新しい商品を登録</h2>
         <form onSubmit={handleCreateProduct} className="space-y-3">
           <div>
-            <label className="block text-sm font-medium mb-1">商品名</label>
+            <label className="block text-sm font-medium mb-1">
+              商品名 <span className="text-gray-500 font-normal">(頒布物のタイトル)</span>
+            </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="例: 新刊「○○の話」"
               required
-              className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2"
+              className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2 placeholder:text-gray-500"
             />
           </div>
           <div className="flex gap-3">
             <div className="flex-1">
-              <label className="block text-sm font-medium mb-1">価格</label>
+              <label className="block text-sm font-medium mb-1">
+                価格 <span className="text-gray-500 font-normal">(円)</span>
+              </label>
               <input
                 type="number"
                 min="1"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                placeholder="例: 1000"
                 required
-                className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2 placeholder:text-gray-500"
               />
             </div>
             <div className="flex-1">
               <label className="block text-sm font-medium mb-1">
-                初期在庫
+                初期在庫 <span className="text-gray-500 font-normal">(冊数)</span>
               </label>
               <input
                 type="number"
                 min="0"
                 value={initialStock}
                 onChange={(e) => setInitialStock(e.target.value)}
+                placeholder="例: 30"
                 required
-                className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2"
+                className="w-full border border-gray-700 bg-gray-800 text-white rounded-lg px-3 py-2 placeholder:text-gray-500"
               />
             </div>
           </div>
@@ -282,6 +289,8 @@ export default function AdminPage() {
       </div>
 
       <h2 className="text-lg font-semibold mb-3">商品一覧</h2>
+
+      {saleError && <p className="text-red-500 mb-3">{saleError}</p>}
 
       {products.length === 0 ? (
         <p className="text-gray-500">まだ商品が登録されていません。</p>
@@ -320,7 +329,7 @@ export default function AdminPage() {
                     キャンセル
                   </button>
                 </div>
-            ) : (
+              ) : (
                 <div className="flex items-center gap-3">
                   <span className="text-sm">
                     在庫: {product.currentStock} / {product.initialStock}
